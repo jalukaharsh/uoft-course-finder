@@ -2,33 +2,29 @@ from typing import List
 from data_formatting import Graph
 
 
-def build_prereq_graph(courses: Dict[str, Dict], course: str):
+def build_trace_graph(courses: Dict[str, Dict], course: str) -> Graph():
     """Returns the prereq/coreq trace subgraph of the given course."""
-    v1 = course_graph.get_vertex(course)
-    neighbours = courses[course]['neighbours']
+    AST = courses[course]['AST']
 
-    if neighbours == []:  # base case: no prereqs/coreqs
+    if AST == []:  # base case: no prereqs/coreqs
         graph = Graph()
-        graph.add_vertex(v1)
+        course_vertex = course_graph.get_vertex(course)
+        graph.add_vertex(course_vertex)
         return graph
     else:
-        prereq_graphs = []
-        for neighbour in neighbours:
-            prereq_graphs.append(build_prereq_graph(courses, neighbour))
-        merge_graphs(prereq_graphs)
+        for vertex in AST.get_all_vertices():
+            if vertex.get_type() == 'course' and vertex != course:
+                prereq_AST = build_prereq_graph(courses, vertex)
+                merge_graphs(AST, prereq_AST)
 
 
-# def build_prereq_graph(course_graph: Graph(), course: str) -> Graph():
-#     """Returns the prereq/coreq trace subgraph of the given course."""
-#     v1 = course_graph.get_vertex(course)
-#     prereq_graphs = []
-#
-#     for neighbour in v1:
-#         edge_type = v1.get_edge_type(neighbour)
-#         if edge_type in {'prereq', 'coreq'}:
-#             prereq_graphs.append(build_prereq_graph(course_graph, neighbour.name))
-#     merge_graphs(prereq_graphs)
-
-
-def merge_graphs(graphs: List[Graph()]) -> Graph():
-    return
+def merge_graph(AST: Graph(), prereq_AST: Graph()) -> None:
+    """Mutates AST so that all vertices and edges in prereq_AST are added to AST."""
+    AST_vertices = AST.get_all_vertices()
+    for vertex in prereq_AST.get_all_vertices():
+        if vertex not in AST_vertices:
+            AST.add_vertex(vertex)
+        else:
+            # duplicate vertex case
+            for neighbour in vertex.neighbours:
+                AST.add_edge(vertex, neighbour)
