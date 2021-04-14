@@ -55,9 +55,8 @@ class PrereqTree:
         It should be in the format described in the academic calendar for course lists.
         """
         # remove all whitespace
-        # prereq_str = re.sub(r'\s+', '', prereq_str)
-        prereq_str = prereq_str.replace(' ', '')
-        # commas and semicolons and pluses mean the same thing in
+        prereq_str = re.sub(r'\s+', '', prereq_str)
+        # commas and semicolons and pluses all mean the same thing in course lists
         prereq_str = prereq_str.replace(';', ',')
         prereq_str = prereq_str.replace('+', ',')
 
