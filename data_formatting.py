@@ -66,9 +66,8 @@ class PrereqTree:
             self.subtrees = None
             return
 
-        # tokenize the prereq string into the form of courses codes, commas,
-        # forward slashes and parentheses
-        split_str = re.findall(r'(?:(?:[A-Z]{3}[0-9]{3}[H,Y]1)|[/,\,, (, )])', prereq_str)
+        # tokenize the prereq string into courses codes, commas, forward slashes and parentheses
+        split_str = re.findall(r'(?:(?:[A-Z]{3}[0-9]{3}[H,Y]1)|[/,()])', prereq_str)
 
         # combine each parenthetical into a single string (which we will later recurse on)
         while '(' in split_str:
