@@ -7,7 +7,6 @@ def convert_tree(tree: PrereqTree) -> Tuple[nx.Graph(), str]:
     g = nx.Graph()
     if tree.subtrees == []:
         g.add_node(tree.item, attr_dict={'type': 'course'})
-        return g, tree.item
     else:
         for subtree in tree.subtrees:
             converted_subtree, subtree_root = convert_prereq_tree(subtree)
@@ -15,7 +14,7 @@ def convert_tree(tree: PrereqTree) -> Tuple[nx.Graph(), str]:
             # add edge from root of g to root of subtree
             edge_type = 'connective' if subtree_root in {'or', 'and'} else 'course'
             g.add_edge(tree.item, subtree_root, edge_type)
-        return g, tree.item
+    return g, tree.item
 
 
 def build_trace_graph(courses: Dict[str, Dict], course: str) -> Graph():
