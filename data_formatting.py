@@ -17,24 +17,13 @@ def get_courses_data() -> dict:
     data = json.load(json_data)
     data_dict = {}
     for course in data:
-        if 'prerequisites' not in course or course['prerequisites'] is None:
-            course['prereq_tree'] = None
-        else:
-            course['prereq_tree'] = PrereqTree(course['prerequisites'])
-
-        if 'corequisites' not in course or course['corequisites'] is None:
-            course['coreq_tree'] = None
-        else:
-            course['coreq_tree'] = PrereqTree(course['corequisites'])
-
         data_dict[course['code']] = course
 
     return data_dict
 
 
 class PrereqTree:
-    """tree representing prequisites. All courses which are not offered by UTSG
-    are deliberately removed.
+    """tree representing prequisites
     Instance Attributes:
         - kind: the type of the tree. It can be 'or' or 'and' or a string of the form
             /[A-Z]{3}[0-9]{3}[H,Y]1/ (in which case it is a root and subtrees is empty)
@@ -47,13 +36,8 @@ class PrereqTree:
     subtrees: Optional[list[PrereqTree]]
 
     def __init__(self, prereq_str: str) -> None:
-        """
-        prereq_str is a string representing prerequisite strings.
-        It should be in the format described in the academic calendar for course lists.
-        """
         # remove all whitespace
-        prereq_str = re.sub(r'\s+', '', prereq_str)
-        # commas and semicolons mean the same thing in
+        prereq_str = re.sub(r'\s+', prereq_str)
         prereq_str = prereq_str.replace(';', ',')
 
         # deal base case of prereq_str being just a single course:
@@ -62,9 +46,9 @@ class PrereqTree:
             self.subtrees = None
             return
 
-        # tokenize the prereq string into the form of courses codes, commas,
+        # tokenize the prereq string into the form of courses, commas,
         # forward slashes and parentheses
-        split_str = re.findall(r'(?:(?:[A-Z]{3}[0-9]{3}[H,Y]1)|[/,\,, (, )])', prereq_str)
+        split_str = re.findall(r'(?:(?:[A-Z]{3}[0-9]{3}[H,Y]1)|[/,\,, (, )])')
 
         # combine each parenthetical into a single string (which we will later recurse on)
         while '(' in split_str:
@@ -72,33 +56,34 @@ class PrereqTree:
             nest = 1
             length = 1
             while nest >= 1:
-                substr = split_str[length + first_paren]
-                length += 1
-                if substr == '(':
+                i = length + first_paren
+                char = split_str[i]
+                if char == '(':
                     nest += 1
-                elif substr == ')':
+                elif char == ')':
                     nest -= 1
 
-            # join the parenthesized string together (without the parentheses included)
-            parenthesized_str = ''.join(split_str[first_paren + 1:first_paren + length - 1])
-
+                length += 1
+            
+            # join the parenthesized string
+            parenthesized_str = ''.join(split_str[first_paren:first_paren + length])
+            
             if re.search(r'[A-Z]{3}[0-9]{3}[H,Y]1', parenthesized_str) is None:
                 # if the parenthesized string includes no course codes then we remove it
                 split_str = split_str[0: first_paren] + split_str[first_paren + length:]
             else:
-                # otherwise insert it into split str, replacing the indices that were used by
-                # its constituent parts
                 split_str = split_str[0: first_paren] + [parenthesized_str] + \
                             split_str[first_paren + length:]
 
-        ors = []  # list of each or(/) block.
+        ors = []  # list of each or(/) block. if longer than one then
         current = []
-        for substr in range(0, len(split_str)):
-            if substr == ',':
+        for i in range(0, len(split_str)):
+            char = split_str[i]
+            if char == ',':
                 ors.append(current)
                 current = []
-            elif substr != '/':
-                current.append(substr)
+            elif char != '/':
+                current.append(char)
 
         if current != '':
             ors.append(current)
@@ -106,10 +91,10 @@ class PrereqTree:
         if len(ors) == 1:
             self.item = 'or'
             self.subtrees = []
-            for el in ors[0]:
+            for el in ors[0]
                 self.subtrees.append(PrereqTree(el))
         else:
             self.item = 'and'
             self.subtrees = []
             for el in ors:
-                self.subtrees.append(PrereqTree('/'.join(el)))
+                self.subtrees.append(PrereqTree(el))
