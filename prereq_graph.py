@@ -1,11 +1,29 @@
 import networkx as nx
-from typing import List
-from data_formatting import Graph
+from typing import List, Tuple
+from .data_formatting import PrereqTree
+
+
+def convert_tree(tree: PrereqTree) -> Tuple[nx.Graph(), str]:
+    g = nx.Graph()
+    if tree.subtrees == []:
+        g.add_node(tree.item, attr_dict={'type': 'course'})
+        return g, tree.item
+    else:
+        for subtree in tree.subtrees:
+            converted_subtree, subtree_root = convert_prereq_tree(subtree)
+            g = nx.compose(g, converted_subtree)
+            # add edge from root of g to root of subtree
+            edge_type = 'connective' if subtree_root in {'or', 'and'} else 'course'
+            g.add_edge(tree.item, subtree_root, edge_type)
+        return g, tree.item
 
 
 def build_trace_graph(courses: Dict[str, Dict], course: str) -> Graph():
     """Returns the prereq/coreq trace subgraph of the given course."""
-    AST = courses[course]['AST']
+    prereq_tree = courses[course]['prereq_tree']
+    coreq_tree = courses[course]['coreq_tree']
+    AST = nx.compose(convert_tree(prereq_tree), convert_tree(coreq_tree))
+
     for vertex in list(AST.nodes):
         # recursive base case is when the only node in AST has course as its item
         if AST.data(vertex)['type'] == 'course' and vertex != course:
@@ -24,3 +42,7 @@ def build_trace_graph(courses: Dict[str, Dict], course: str) -> Graph():
 #             # duplicate vertex case
 #             for neighbour in vertex.neighbours:
 #                 AST.add_edge(vertex, neighbour)
+
+def draw_trace_graph(courses: Dict[str, Dict], course: str) -> None:
+    graph = build_trace_graph(courses, course)
+    nx.draw_networkx(graph)
