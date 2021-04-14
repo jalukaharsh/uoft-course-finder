@@ -20,7 +20,7 @@ def get_courses_data() -> dict:
         if 'prerequisites' not in course or course['prerequisites'] is None:
             course['prereq_tree'] = None
         else:
-            # print(course['code'], course['prerequisites'])
+            print(course['code'], course['prerequisites'])
             course['prereq_tree'] = PrereqTree(course['prerequisites'])
 
         if 'corequisites' not in course or course['corequisites'] is None:
@@ -36,14 +36,15 @@ def get_courses_data() -> dict:
 class PrereqTree:
     """tree representing prequisites. All courses which are not offered by UTSG
     are deliberately removed. If a string contains two course codes without a (, ), ',', /
-    between them (only english) then '/' is assumed
+    between them (only english) then '/' is assumed.
     Instance Attributes:
-        - kind: the type of the tree. It can be 'or' or 'and' or a string of the form
+        - item: the type of the tree. It can be 'or' or 'and' or a string of the form
             /[A-Z]{3}[0-9]{3}[H,Y]1/ (in which case it is a root and subtrees is empty)
         - subtrees: The vertices that are adjacent to this vertex. This
 
     Representation Invariants:
-        - item is 'and' or 'or' or of the form [A-Z]{3}[0-9]{3}[H,Y]1
+        - self.item == 'and' or self.item == 'or' or
+            re.fullmatch(r'[A-Z]{3}[0-9]{3}[H,Y]1', self.item) is not None
     """
     item: str
     subtrees: Optional[list[PrereqTree]]
@@ -54,9 +55,11 @@ class PrereqTree:
         It should be in the format described in the academic calendar for course lists.
         """
         # remove all whitespace
-        prereq_str = re.sub(r'\s+', '', prereq_str)
-        # commas and semicolons mean the same thing in
+        # prereq_str = re.sub(r'\s+', '', prereq_str)
+        prereq_str = prereq_str.replace(' ', '')
+        # commas and semicolons and pluses mean the same thing in
         prereq_str = prereq_str.replace(';', ',')
+        prereq_str = prereq_str.replace('+', ',')
 
         # deal base case of prereq_str being just a single course:
         if re.fullmatch(r'[A-Z]{3}[0-9]{3}[H,Y]1', prereq_str) is not None:
@@ -96,6 +99,11 @@ class PrereqTree:
                 # its constituent parts
                 split_str = split_str[0: first_paren] + [parenthesized_str] + \
                             split_str[first_paren + length:]
+
+        while ')' in split_str:  # this should only happen if there is some ')' which is
+            # not matching a ')'.
+            index = split_str.index(')')
+            split_str = split_str[:index] + split_str[index + 1:]
 
         ors = []  # list of each or(/) block.
         current = []
