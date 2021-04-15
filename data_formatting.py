@@ -7,12 +7,12 @@ course represented as a dictionary.
 """
 from __future__ import annotations
 import json
-from typing import Any, Optional
+from typing import Optional
 import re
 
 
 def get_courses_data() -> dict:
-    """gets course data from file"""
+    """Gets course data from the file it is stored in and processes it into a dict"""
     json_data = open('courses.json')
     data = json.load(json_data)
     data_dict = {}
