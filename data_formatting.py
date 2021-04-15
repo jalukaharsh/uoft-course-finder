@@ -20,7 +20,6 @@ def get_courses_data() -> dict:
         if 'prerequisites' not in course or course['prerequisites'] is None:
             course['prereq_tree'] = None
         else:
-            print(course['code'], course['prerequisites'])
             course['prereq_tree'] = PrereqTree(course['prerequisites'])
 
         if 'corequisites' not in course or course['corequisites'] is None:
