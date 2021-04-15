@@ -25,31 +25,32 @@ def get_courses_data() -> dict:
         if 'prerequisites' not in course or course['prerequisites'] is None:
             course['prereq_tree'] = None
         else:
-            course['prereq_tree'] = convert_tree(PrereqTree(course['prerequisites']))
+            prereq_tree = PrereqTree(course['prerequisites'])
+            course['prereq_tree'], root = convert_tree(prereq_tree, 'prereq')
+            course['prereq_tree'].add_edge(course['code'], root)
 
         if 'corequisites' not in course or course['corequisites'] is None:
             course['coreq_tree'] = None
         else:
-            course['coreq_tree'] = convert_tree(PrereqTree(course['corequisites']))
+            coreq_tree = PrereqTree(course['corequisites'])
+            course['coreq_tree'], root = convert_tree(coreq_tree, 'coreq')
+            course['coreq_tree'].add_edge(course['code'], root)
 
         data_dict[course['code']] = course
     return data_dict
 
 
-def convert_tree(tree: PrereqTree) -> Tuple[nx.Graph, str]:
+def convert_tree(tree: PrereqTree, tree_type: str) -> Tuple[nx.Graph, str]:
     """Returns as a tuple the given PrereqTree as a networkx graph along with the tree's root."""
     g = nx.Graph()
-    if tree is None:
-        print(1)
     if tree.subtrees == []:
         g.add_node(tree.item, attr_dict={'type': 'course'})
     else:
         for subtree in tree.subtrees:
-            converted_subtree, subtree_root = convert_tree(subtree)
+            converted_subtree, subtree_root = convert_tree(subtree, tree_type)
             g = nx.compose(g, converted_subtree)
             # add edge from root of g to root of subtree
-            edge_type = 'connective' if subtree_root in {'or', 'and'} else 'course'
-            g.add_edge(tree.item, subtree_root, edge_type=edge_type)
+            g.add_edge(tree.item, subtree_root, edge_type=tree_type)
     return g, tree.item
 
 

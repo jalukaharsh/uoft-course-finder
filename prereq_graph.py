@@ -10,8 +10,8 @@ def build_trace_graph(courses: Dict[str, Dict], course: str) -> nx.Graph():
     """Returns the prereq/coreq trace subgraph of the given course."""
     prereq_tree = courses[course]['prereq_tree']
     coreq_tree = courses[course]['coreq_tree']
-    # AST = nx.compose(convert_tree(prereq_tree), convert_tree(coreq_tree))
-    AST, _ = nx.compose_all(tree for tree in [prereq_tree, coreq_tree] if tree is not None)
+    AST = nx.compose_all(tree for tree in [prereq_tree, coreq_tree, nx.Graph()]
+                         if tree is not None)
 
     node_types = dict(AST.nodes(data='type', default='unknown'))
     for vertex in node_types:
@@ -31,7 +31,7 @@ def future_courses(courses, prereq: str) -> str:
     return str.join('\n', future_courses)
 
 
-def draw_trace_graph(courses, G: nx.Graph()) -> None:
+def draw_trace_graph(G: nx.Graph(), courses: Dict[str, dict]) -> None:
     """Draws the given trace graph. Adds an event listener for clicks nodes that displays
     future courses."""
     fig, ax = plt.subplots()
@@ -75,7 +75,8 @@ def prereq_run(course: str) -> None:
     """Return a visualization of the prerequisites graph of the given course. """
     courses = get_courses_data()
     g = build_trace_graph(courses, course)
-    draw_trace_graph(graph, courses)
+    print(g.nodes)
+    draw_trace_graph(g, courses)
 
 
 if __name__ == '__main__':
