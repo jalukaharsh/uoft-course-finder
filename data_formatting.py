@@ -1,10 +1,11 @@
 """CSC111 Project: University of Toronto Course Finder: Data Formatting
-
 Module Description:
 ====================
 The module contains the function that processes the raw data file into list of courses, with each
 course represented as a dictionary.
 """
+
+
 from __future__ import annotations
 import json
 from typing import Optional
@@ -12,7 +13,10 @@ import re
 
 
 def get_courses_data() -> dict:
-    """Gets course data from the file it is stored in and processes it into a dict"""
+    """Return a dictionary of course data from the courses.json file. Two new key-value pairs are
+    added; 'prereq_tree' and 'coreq_tree'. The value for each key is a tree generated based on the
+    string of prerequisites and corequisites respectively.
+    """
     json_data = open('courses.json')
     data = json.load(json_data)
     data_dict = {}
@@ -28,14 +32,15 @@ def get_courses_data() -> dict:
             course['coreq_tree'] = PrereqTree(course['corequisites'])
 
         data_dict[course['code']] = course
-
     return data_dict
 
 
 class PrereqTree:
-    """tree representing prequisites. All courses which are not offered by UTSG
-    are deliberately removed. If a string contains two course codes without a (, ), ',', /
-    between them (only english) then '/' is assumed.
+    """A tree dataclass representing prerequisites and corequisites.
+
+     All courses which are not offered by UTSG are deliberately removed. If a string contains two
+     course codes without a (, ), ',', / between them (only english) then '/' is assumed.
+
     Instance Attributes:
         - item: the type of the tree. It can be 'or' or 'and' or a string of the form
             /[A-Z]{3}[0-9]{3}[H,Y]1/ (in which case it is a root and subtrees is empty)
@@ -50,7 +55,7 @@ class PrereqTree:
 
     def __init__(self, prereq_str: str) -> None:
         """
-        prereq_str is a string representing prerequisite strings.
+        prereq_str is a string representing prerequisite/corequisite strings.
         It should be in the format described in the academic calendar for course lists.
         """
         # remove all whitespace
