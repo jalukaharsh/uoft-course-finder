@@ -25,11 +25,11 @@ def get_courses_data() -> dict:
             course['prereq_tree'] = None
         else:
             # if a course appears in its own prereq list then remove it
-            course['prerequisites'] = course['prerequisites'].replace(course['code'], '') 
+            course['prerequisites'] = course['prerequisites'].replace(course['code'], '')
             prereq_tree = PrereqTree(course['prerequisites'])
             course['prereq_tree'], root = convert_tree(prereq_tree, 'prereq')
             course['prereq_tree'].add_node(course['code'])
-            course['prereq_tree'].add_edge(course['code'], root)
+            course['prereq_tree'].add_edge_from(course['code'], root)
 
         if 'corequisites' not in course or course['corequisites'] is None:
             course['coreq_tree'] = None
@@ -38,7 +38,7 @@ def get_courses_data() -> dict:
             coreq_tree = PrereqTree(course['corequisites'])
             course['coreq_tree'], root = convert_tree(coreq_tree, 'coreq')
             course['coreq_tree'].add_node(course['code'])
-            course['coreq_tree'].add_edge(course['code'], root)
+            course['coreq_tree'].add_edge_from(course['code'], root)
 
         data_dict[course['code']] = course
     return data_dict
@@ -54,7 +54,7 @@ def convert_tree(tree: PrereqTree, tree_type: str) -> Tuple[nx.Graph, str]:
             converted_subtree, subtree_root = convert_tree(subtree, tree_type)
             g = nx.compose(g, converted_subtree)
             # add edge from root of g to root of subtree
-            g.add_edge(tree.item, subtree_root, edge_type=tree_type)
+            g.add_edge_from(tree.item, subtree_root, edge_type=tree_type)
     return g, tree.item
 
 
