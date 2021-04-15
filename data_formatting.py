@@ -25,8 +25,8 @@ def get_courses_data() -> dict:
             course['prereq_tree'] = None
         else:
             # if a course appears in its own prereq list then remove it
-            prereq_str = course['prerequisites'].replace(course['code'], '') 
-            prereq_tree = PrereqTree(prereq_str)
+            course['prerequisites'] = course['prerequisites'].replace(course['code'], '') 
+            prereq_tree = PrereqTree(course['prerequisites'])
             course['prereq_tree'], root = convert_tree(prereq_tree, 'prereq')
             course['prereq_tree'].add_node(course['code'])
             course['prereq_tree'].add_edge(course['code'], root)
@@ -34,8 +34,8 @@ def get_courses_data() -> dict:
         if 'corequisites' not in course or course['corequisites'] is None:
             course['coreq_tree'] = None
         else:
-            coreq_str = course['corequisites'].replace(course['code'], '')
-            coreq_tree = PrereqTree(coreq_str)
+            course['corequisites'] = course['corequisites'].replace(course['code'], '')
+            coreq_tree = PrereqTree(course['corequisites'])
             course['coreq_tree'], root = convert_tree(coreq_tree, 'coreq')
             course['coreq_tree'].add_node(course['code'])
             course['coreq_tree'].add_edge(course['code'], root)
