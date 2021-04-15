@@ -71,7 +71,7 @@ class PrereqTree:
         - subtrees: The vertices that are adjacent to this vertex. This
 
     Representation Invariants:
-        - self.item == 'and' or self.item == 'or' or
+        - self.item == 'and' or self.item == 'or' or self.item = '' or
             re.fullmatch(r'[A-Z]{3}[0-9]{3}[H,Y]1', self.item) is not None
     """
     item: str
@@ -149,6 +149,9 @@ class PrereqTree:
                 self.subtrees = []
                 for el in ors[0]:
                     self.subtrees.append(PrereqTree(el))
+            else:
+                self.subtrees = []
+                self.item = ''                   
         else:
             self.item = 'and'
             self.subtrees = []
