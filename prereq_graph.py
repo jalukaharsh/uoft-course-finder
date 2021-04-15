@@ -3,35 +3,20 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 from typing import Tuple, Dict
-from .data_formatting import PrereqTree
 from data_formatting import get_courses_data
-
-courses = get_courses_data()
-
-
-def convert_tree(tree: PrereqTree) -> Tuple[nx.Graph(), str]:
-    g = nx.Graph()
-    if tree.subtrees == []:
-        g.add_node(tree.item, attr_dict={'type': 'course'})
-    else:
-        for subtree in tree.subtrees:
-            converted_subtree, subtree_root = convert_tree(subtree)
-            g = nx.compose(g, converted_subtree)
-            # add edge from root of g to root of subtree
-            edge_type = 'connective' if subtree_root in {'or', 'and'} else 'course'
-            g.add_edge(tree.item, subtree_root, edge_type)
-    return g, tree.item
 
 
 def build_trace_graph(courses: Dict[str, Dict], course: str) -> nx.Graph():
     """Returns the prereq/coreq trace subgraph of the given course."""
     prereq_tree = courses[course]['prereq_tree']
     coreq_tree = courses[course]['coreq_tree']
-    AST = nx.compose(convert_tree(prereq_tree), convert_tree(coreq_tree))
+    # AST = nx.compose(convert_tree(prereq_tree), convert_tree(coreq_tree))
+    AST, _ = nx.compose_all(tree for tree in [prereq_tree, coreq_tree] if tree is not None)
 
-    for vertex in list(AST.nodes):
+    node_types = dict(AST.nodes(data='type', default='unknown'))
+    for vertex in node_types:
         # recursive base case is when the only node in AST has course as its item
-        if AST.data(vertex)['type'] == 'course' and vertex != course:
+        if node_types[vertex] == 'course' and vertex != course:
             prereq_AST = build_trace_graph(courses, vertex)
             AST = nx.compose(AST, prereq_AST)
     return AST
@@ -46,7 +31,7 @@ def future_courses(courses, prereq: str) -> str:
     return str.join('\n', future_courses)
 
 
-def draw_trace_graph(G: nx.Graph()) -> None:
+def draw_trace_graph(courses, G: nx.Graph()) -> None:
     """Draws the given trace graph. Adds an event listener for clicks nodes that displays
     future courses."""
     fig, ax = plt.subplots()
@@ -66,7 +51,7 @@ def draw_trace_graph(G: nx.Graph()) -> None:
         node_attr = {'node': node}
         node_attr.update(G.nodes[node])
         # add hover box stuff here
-        text = future_courses(node)
+        text = future_courses(courses, node)
         annot.set_text(text)
 
     def hover(event):
@@ -88,5 +73,10 @@ def draw_trace_graph(G: nx.Graph()) -> None:
 
 def prereq_run(course: str) -> None:
     """Return a visualization of the prerequisites graph of the given course. """
-    graph = build_trace_graph(courses, course)
-    draw_trace_graph(graph)
+    courses = get_courses_data()
+    g = build_trace_graph(courses, course)
+    draw_trace_graph(graph, courses)
+
+
+if __name__ == '__main__':
+    prereq_run('CSC240H1')

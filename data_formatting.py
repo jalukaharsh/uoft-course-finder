@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 from typing import Optional
 import re
+import networkx as nx
 
 
 def get_courses_data() -> dict:
@@ -24,15 +25,32 @@ def get_courses_data() -> dict:
         if 'prerequisites' not in course or course['prerequisites'] is None:
             course['prereq_tree'] = None
         else:
-            course['prereq_tree'] = PrereqTree(course['prerequisites'])
+            course['prereq_tree'] = convert_tree(PrereqTree(course['prerequisites']))
 
         if 'corequisites' not in course or course['corequisites'] is None:
             course['coreq_tree'] = None
         else:
-            course['coreq_tree'] = PrereqTree(course['corequisites'])
+            course['coreq_tree'] = convert_tree(PrereqTree(course['corequisites']))
 
         data_dict[course['code']] = course
     return data_dict
+
+
+def convert_tree(tree: PrereqTree) -> Tuple[nx.Graph, str]:
+    """Returns as a tuple the given PrereqTree as a networkx graph along with the tree's root."""
+    g = nx.Graph()
+    if tree is None:
+        print(1)
+    if tree.subtrees == []:
+        g.add_node(tree.item, attr_dict={'type': 'course'})
+    else:
+        for subtree in tree.subtrees:
+            converted_subtree, subtree_root = convert_tree(subtree)
+            g = nx.compose(g, converted_subtree)
+            # add edge from root of g to root of subtree
+            edge_type = 'connective' if subtree_root in {'or', 'and'} else 'course'
+            g.add_edge(tree.item, subtree_root, edge_type=edge_type)
+    return g, tree.item
 
 
 class PrereqTree:
@@ -51,7 +69,7 @@ class PrereqTree:
             re.fullmatch(r'[A-Z]{3}[0-9]{3}[H,Y]1', self.item) is not None
     """
     item: str
-    subtrees: Optional[list[PrereqTree]]
+    subtrees: list[PrereqTree]
 
     def __init__(self, prereq_str: str) -> None:
         """
@@ -67,7 +85,7 @@ class PrereqTree:
         # deal base case of prereq_str being just a single course:
         if re.fullmatch(r'[A-Z]{3}[0-9]{3}[H,Y]1', prereq_str) is not None:
             self.item = prereq_str
-            self.subtrees = None
+            self.subtrees = []
             return
 
         # tokenize the prereq string into courses codes, commas, forward slashes and parentheses
