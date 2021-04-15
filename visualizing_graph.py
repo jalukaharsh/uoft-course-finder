@@ -7,6 +7,8 @@ import plotly.graph_objects as go
 
 LINE_COLOUR = 'rgb(210,210,210)'
 VERTEX_BORDER_COLOUR = 'rgb(50, 50, 50)'
+ROOT_COLOUR = 'rgb(89, 205, 105)'
+OTHERS_COLOUR = 'rgb(105, 89, 205)'
 
 
 def draw_graph(graph: nx.Graph(), layout: str = 'spring_layout') -> None:
@@ -17,6 +19,8 @@ def draw_graph(graph: nx.Graph(), layout: str = 'spring_layout') -> None:
     x_values = [pos[k][0] for k in graph.nodes]
     y_values = [pos[k][1] for k in graph.nodes]
     labels = list(graph.nodes)
+
+    colours = [ROOT_COLOUR if graph.nodes[k]['tag'] == 'original' else OTHERS_COLOUR for k in graph.nodes]
 
     x_edges = []
     y_edges = []
@@ -38,6 +42,7 @@ def draw_graph(graph: nx.Graph(), layout: str = 'spring_layout') -> None:
                         name='nodes',
                         marker=dict(symbol='circle-dot',
                                     size=5,
+                                    color=colours,
                                     line=dict(color=VERTEX_BORDER_COLOUR, width=0.5)
                                     ),
                         text=labels,
