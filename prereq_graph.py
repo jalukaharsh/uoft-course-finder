@@ -1,7 +1,12 @@
+"""Code to build the prerequisities graph. """
+
 import networkx as nx
 import matplotlib.pyplot as plt
-from typing import List, Tuple
+from typing import Tuple, Dict
 from .data_formatting import PrereqTree
+from data_formatting import get_courses_data
+
+courses = get_courses_data()
 
 
 def convert_tree(tree: PrereqTree) -> Tuple[nx.Graph(), str]:
@@ -18,7 +23,7 @@ def convert_tree(tree: PrereqTree) -> Tuple[nx.Graph(), str]:
     return g, tree.item
 
 
-def build_trace_graph(courses: Dict[str, Dict], course: str) -> Graph():
+def build_trace_graph(courses: Dict[str, Dict], course: str) -> nx.Graph():
     """Returns the prereq/coreq trace subgraph of the given course."""
     prereq_tree = courses[course]['prereq_tree']
     coreq_tree = courses[course]['coreq_tree']
@@ -28,7 +33,7 @@ def build_trace_graph(courses: Dict[str, Dict], course: str) -> Graph():
         # recursive base case is when the only node in AST has course as its item
         if AST.data(vertex)['type'] == 'course' and vertex != course:
             prereq_AST = build_trace_graph(courses, vertex)
-            AST = compose(AST, prereq_AST)
+            AST = nx.compose(AST, prereq_AST)
     return AST
 
 
@@ -79,3 +84,9 @@ def draw_trace_graph(G: nx.Graph()) -> None:
 
     fig.canvas.mpl_connect("motion_notify_event", hover)
     plt.show()
+
+
+def prereq_run(course: str) -> None:
+    """Return a visualization of the prerequisites graph of the given course. """
+    graph = build_trace_graph(courses, course)
+    draw_trace_graph(graph)
