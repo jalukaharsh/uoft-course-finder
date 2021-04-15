@@ -22,53 +22,53 @@ def build_trace_graph(courses: Dict[str, Dict], course: str) -> nx.DiGraph():
     return AST
 
 
-def future_courses(courses, prereq: str) -> str:
-    """Returns """
-    future_courses = []
-    for v in courses:
-        if prereq in courses[v]['prerequisites']:
-            future_courses.append(v)
-    return str.join('\n', future_courses)
-
-
-def draw_trace_graph(G: nx.Graph(), courses: Dict[str, dict]) -> None:
-    """Draws the given trace graph. Adds an event listener for clicks nodes that displays
-    future courses."""
-    fig, ax = plt.subplots()
-    pos = nx.spring_layout(G)
-    nodes = nx.draw_networkx_nodes(G, pos=pos, ax=ax)
-    nx.draw_networkx_edges(G, pos=pos, ax=ax)
-
-    annot = ax.annotate("", xy=(0, 0), xytext=(20, 20), textcoords="offset points",
-                        bbox=dict(boxstyle="round", fc="w"),
-                        arrowprops=dict(arrowstyle="->"))
-    annot.set_visible(False)
-
-    def update_annot(ind):
-        node = ind["ind"][0]
-        xy = pos[node]
-        annot.xy = xy
-        node_attr = {'node': node}
-        node_attr.update(G.nodes[node])
-        # add hover box stuff here
-        text = future_courses(courses, node)
-        annot.set_text(text)
-
-    def hover(event):
-        vis = annot.get_visible()
-        if event.inaxes == ax:
-            cont, ind = nodes.contains(event)
-            if cont:
-                update_annot(ind)
-                annot.set_visible(True)
-                fig.canvas.draw_idle()
-            else:
-                if vis:
-                    annot.set_visible(False)
-                    fig.canvas.draw_idle()
-
-    fig.canvas.mpl_connect("motion_notify_event", hover)
-    plt.show()
+# def future_courses(courses, prereq: str) -> str:
+#     """Returns """
+#     future_courses = []
+#     for v in courses:
+#         if prereq in courses[v]['prerequisites']:
+#             future_courses.append(v)
+#     return str.join('\n', future_courses)
+#
+#
+# def draw_trace_graph(G: nx.Graph(), courses: Dict[str, dict]) -> None:
+#     """Draws the given trace graph. Adds an event listener for clicks nodes that displays
+#     future courses."""
+#     fig, ax = plt.subplots()
+#     pos = nx.spring_layout(G)
+#     nodes = nx.draw_networkx_nodes(G, pos=pos, ax=ax)
+#     nx.draw_networkx_edges(G, pos=pos, ax=ax)
+#
+#     annot = ax.annotate("", xy=(0, 0), xytext=(20, 20), textcoords="offset points",
+#                         bbox=dict(boxstyle="round", fc="w"),
+#                         arrowprops=dict(arrowstyle="->"))
+#     annot.set_visible(False)
+#
+#     def update_annot(ind):
+#         node = ind["ind"][0]
+#         xy = pos[node]
+#         annot.xy = xy
+#         node_attr = {'node': node}
+#         node_attr.update(G.nodes[node])
+#         # add hover box stuff here
+#         text = future_courses(courses, node)
+#         annot.set_text(text)
+#
+#     def hover(event):
+#         vis = annot.get_visible()
+#         if event.inaxes == ax:
+#             cont, ind = nodes.contains(event)
+#             if cont:
+#                 update_annot(ind)
+#                 annot.set_visible(True)
+#                 fig.canvas.draw_idle()
+#             else:
+#                 if vis:
+#                     annot.set_visible(False)
+#                     fig.canvas.draw_idle()
+#
+#     fig.canvas.mpl_connect("motion_notify_event", hover)
+#     plt.show()
 
 
 def prereq_run(course: str) -> None:
