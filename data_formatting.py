@@ -27,6 +27,7 @@ def get_courses_data() -> dict:
         else:
             prereq_tree = PrereqTree(course['prerequisites'])
             course['prereq_tree'], root = convert_tree(prereq_tree, 'prereq')
+            course['prereq_tree'].add_node(course['code'])
             course['prereq_tree'].add_edge(course['code'], root)
 
         if 'corequisites' not in course or course['corequisites'] is None:
@@ -34,6 +35,7 @@ def get_courses_data() -> dict:
         else:
             coreq_tree = PrereqTree(course['corequisites'])
             course['coreq_tree'], root = convert_tree(coreq_tree, 'coreq')
+            course['coreq_tree'].add_node(course['code'])
             course['coreq_tree'].add_edge(course['code'], root)
 
         data_dict[course['code']] = course
