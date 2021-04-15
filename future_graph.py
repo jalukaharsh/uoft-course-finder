@@ -28,10 +28,10 @@ def future_one_level(courses: Dict[str, Dict], course: str) -> nx.Graph():
     """Return a graph containing only the courses that the input course directly leads to.
     """
     future_graph = nx.Graph()
-    future_graph.add_node(course)
+    future_graph.add_node(course, tag='original')
     for item in courses:
         if courses[item]['prerequisites'] is not None and course in courses[item]['prerequisites']:
-            future_graph.add_node(item)
+            future_graph.add_node(item, tag='no')
             future_graph.add_edge(course, item)
     return future_graph
 
@@ -44,5 +44,5 @@ def future_one_level_mutate(courses: Dict[str, Dict], course: str, future_graph:
     """
     for item in courses:
         if courses[item]['prerequisites'] is not None and course in courses[item]['prerequisites']:
-            future_graph.add_node(item)
+            future_graph.add_node(item, tag='no')
             future_graph.add_edge(course, item)
