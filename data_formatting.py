@@ -8,7 +8,7 @@ course represented as a dictionary.
 
 from __future__ import annotations
 import json
-from typing import Optional
+from typing import Optional, Tuple
 import re
 import networkx as nx
 
