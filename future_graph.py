@@ -18,10 +18,7 @@ def add_children(courses: Dict[str, Dict], course: str, graph: nx.Graph()) -> No
         if courses[item]['prerequisites'] is not None and course in courses[item]['prerequisites']:
             graph.add_node(item, tag='no')
             graph.add_edge(course, item)
-            try:
-                add_children(courses, item, graph)
-            except RecursionError:
-                pass
+            add_children(courses, item, graph)
 
 
 def future_one_level(courses: Dict[str, Dict], course: str) -> nx.Graph():
