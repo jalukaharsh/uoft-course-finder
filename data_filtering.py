@@ -10,44 +10,46 @@ breadth, department and level.
 from typing import Dict, Optional
 
 
-def breadth(br: Optional[int], courses: Dict) -> Dict:
+def breadth(br: str, courses: Dict) -> Dict:
     """Return a list of course titles of all the courses that satisfy the br breadth requirement.
     """
-    if br is None:
+    if br == 'Pick a breadth category' or br == '':
         return courses
+    new_courses = {}
     for course in courses:
-        if str(br) not in courses[course]['arts_and_science_breadth']:
-            courses.pop(course)
-    return courses
+        if courses[course]['arts_and_science_breadth'] is not None and \
+                br in courses[course]['arts_and_science_breadth']:
+            new_courses[course] = courses[course]
+    return new_courses
 
 
-def level(lev: Optional[int], courses: Dict) -> Dict:
+def level(lev: str, courses: Dict) -> Dict:
     """Return a list of course titles of all the courses that are at the lvl level."""
-    if lev is None:
+    if lev == 'Pick a level' or lev == '':
         return courses
+    new_courses = {}
     for course in courses:
-        if course[4] != str(lev):
-            courses.pop(course)
-    return courses
+        if course[3] == str(lev):
+            new_courses[course] = courses[course]
+    return new_courses
 
 
-def department(dept: Optional[str], courses: Dict) -> Dict:
+def department(dept: str, courses: Dict) -> Dict:
     """Return a list of course titles of all the courses that are from dept department. """
-    if dept is None:
+    if dept == 'Pick a department' or dept == '':
         return courses
+    new_courses = {}
     for course in courses:
         if courses[course]['department'] != dept:
-            courses.pop(course)
-    return courses
+            new_courses[course] = courses[course]
+    return new_courses
 
 
-def filter_courses(courses: Dict, lvl: Optional[int], dept: Optional[str],
-                   br: Optional[int]) -> Dict:
+def filter_courses(courses: Dict, lvl: str, dept: str, br: str) -> Dict:
     """Return a dictionary that has all the courses filtered by the specified level, department
     and/or breadth requirement.
     """
-    dict2 = courses.copy()
-    breadth(br, dict2)
-    level(lvl, dict2)
-    department(dept, dict2)
-    return dict2
+    course1 = breadth(br, courses)
+    course2 = level(lvl, course1)
+    course3 = department(dept, course2)
+    return course3

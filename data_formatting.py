@@ -143,10 +143,11 @@ class PrereqTree:
             ors.append(current)
 
         if len(ors) == 1:
-            self.item = 'or'
-            self.subtrees = []
-            for el in ors[0]:
-                self.subtrees.append(PrereqTree(el))
+            if len(ors[0]) >=1 :
+                self.item = 'or'
+                self.subtrees = []
+                for el in ors[0]:
+                    self.subtrees.append(PrereqTree(el))
         else:
             self.item = 'and'
             self.subtrees = []
