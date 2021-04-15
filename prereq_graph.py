@@ -10,8 +10,8 @@ def build_trace_graph(courses: Dict[str, Dict], course: str) -> nx.Graph():
     """Returns the prereq/coreq trace subgraph of the given course."""
     prereq_tree = courses[course]['prereq_tree']
     coreq_tree = courses[course]['coreq_tree']
-    AST = nx.compose_all(tree for tree in [prereq_tree, coreq_tree, nx.Graph()]
-                         if tree is not None)
+    AST = nx.compose_all([tree for tree in [prereq_tree, coreq_tree, nx.Graph()]
+                          if tree is not None])
 
     node_types = dict(AST.nodes(data='type', default='unknown'))
     for vertex in node_types:

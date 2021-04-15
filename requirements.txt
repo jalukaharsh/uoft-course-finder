@@ -1,0 +1,9 @@
+# CSC111 Winter 2021: Final Project requirements
+
+# GUI
+tkinter
+
+# graphs and graph visualization
+networkx
+matplotlib
+plotly
