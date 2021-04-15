@@ -10,7 +10,7 @@ def convert_tree(tree: PrereqTree) -> Tuple[nx.Graph(), str]:
         g.add_node(tree.item, attr_dict={'type': 'course'})
     else:
         for subtree in tree.subtrees:
-            converted_subtree, subtree_root = convert_prereq_tree(subtree)
+            converted_subtree, subtree_root = convert_tree(subtree)
             g = nx.compose(g, converted_subtree)
             # add edge from root of g to root of subtree
             edge_type = 'connective' if subtree_root in {'or', 'and'} else 'course'
@@ -27,12 +27,13 @@ def build_trace_graph(courses: Dict[str, Dict], course: str) -> Graph():
     for vertex in list(AST.nodes):
         # recursive base case is when the only node in AST has course as its item
         if AST.data(vertex)['type'] == 'course' and vertex != course:
-            prereq_AST = build_prereq_graph(courses, vertex)
+            prereq_AST = build_trace_graph(courses, vertex)
             AST = compose(AST, prereq_AST)
     return AST
 
 
 def future_courses(courses, prereq: str) -> str:
+    """Returns """
     future_courses = []
     for v in courses:
         if prereq in courses[v]['prerequisites']:
@@ -60,7 +61,7 @@ def draw_trace_graph(G: nx.Graph()) -> None:
         node_attr = {'node': node}
         node_attr.update(G.nodes[node])
         # add hover box stuff here
-        text = future_courses_list(node)
+        text = future_courses(node)
         annot.set_text(text)
 
     def hover(event):
