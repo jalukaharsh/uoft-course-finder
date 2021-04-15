@@ -6,11 +6,11 @@ from typing import Tuple, Dict
 from data_formatting import get_courses_data
 
 
-def build_trace_graph(courses: Dict[str, Dict], course: str) -> nx.Graph():
+def build_trace_graph(courses: Dict[str, Dict], course: str) -> nx.DiGraph():
     """Returns the prereq/coreq trace subgraph of the given course."""
     prereq_tree = courses[course]['prereq_tree']
     coreq_tree = courses[course]['coreq_tree']
-    AST = nx.compose_all([tree for tree in [prereq_tree, coreq_tree, nx.Graph()]
+    AST = nx.compose_all([tree for tree in [prereq_tree, coreq_tree, nx.DiGraph()]
                           if tree is not None])
 
     node_types = dict(AST.nodes(data='type', default='unknown'))
