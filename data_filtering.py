@@ -7,8 +7,7 @@ The module contains the code that will filter the courses based on courses taken
 breadth, department and level.
 """
 
-
-from typing import List, Dict, Optional
+from typing import Dict, Optional
 
 
 def breadth(br: Optional[int], courses: Dict) -> Dict:
