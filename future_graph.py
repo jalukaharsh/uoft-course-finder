@@ -6,7 +6,7 @@ from typing import Dict
 
 def future(courses: Dict[str, Dict], course: str) -> nx.Graph():
     """Return a graph containing all the future courses that this course can lead to. """
-    future_graph = nx.DiGraph()
+    future_graph = nx.Graph()
     future_graph.add_node(course, tag='original')
     add_children(courses, course, future_graph)
     return future_graph
