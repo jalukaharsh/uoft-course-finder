@@ -1,9 +1,11 @@
-"""CSC111 Project: University of Toronto Course Finder: Data Filtering
+"""CSC111 Project: University of Toronto Course Finder: Visualizing Graphs
 
 Module Description:
 ===================
 The module contains the code for visualizing graphs.
 """
+
+
 from typing import Dict
 import networkx as nx
 import plotly.graph_objects as go
