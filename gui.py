@@ -6,9 +6,8 @@ The module contains the code for the graphical user interface.
 """
 
 import tkinter as tk
-from visualizing_graph import future_run
+from visualizing_graph import future_run, prereq_run
 from data_formatting import get_courses_data
-# from prereq_graph import prereq_run
 from tkinter import ttk
 from data_filtering import filter_courses
 
@@ -41,7 +40,7 @@ def run_app() -> None:
 
         if course_input.get() in courses:
             prereq_button = tk.Button(newframe, text="Prerequisite Graph",
-                                      # command=lambda: prereq_run(course_input.get())
+                                      command=lambda: prereq_run(course_input.get())
                                       )
             prereq_button.pack(side=tk.LEFT, padx=5, pady=20)
 
