@@ -48,17 +48,12 @@ def add_tree(course: Dict, type: str) -> None:
     tree = PrereqTree(course[type + 'requisites'])
 
     # add requisite tree to course dict
-    course[type + 'req_tree'], root, _ = convert_tree(tree, type + 'req', code)
-
-    # add edge from course to req tree
-    course[type + 'req_tree'].add_node(code, type='course', value='')
+    course[type + 'req_tree'], root, connective_count = convert_tree(tree, type + 'req', code)
+    # add course to graph
+    course[type + 'req_tree'].add_node(code, type='course', value=code)
+    # add edge from course to req tree root
     if root != '':
-        # course[type + 'req_tree'].add_node(f'{root[:-1]}{connective_count}',
-        #                                    type='connective', value='')
         course[type + 'req_tree'].add_edge(code, root, edge_type=type + 'req')
-        # remove any isolated leftover connectives
-        isolates = list(nx.isolates(course[type + 'req_tree']))
-        course[type + 'req_tree'].remove_nodes_from(isolates)
 
 
 def convert_tree(tree: PrereqTree, tree_type: str,
@@ -75,7 +70,7 @@ def convert_tree(tree: PrereqTree, tree_type: str,
         # base case: leaf node, which always represents a course
         if tree.item == '':
             return g, '', connective_count
-        g.add_node(tree.item, type='course', value='')
+        g.add_node(tree.item, type='course', value=tree.item)
         return g, tree.item, connective_count
     else:
         # create a copy to avoid mutation
