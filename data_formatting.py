@@ -25,38 +25,123 @@ def get_courses_data() -> dict:
         if 'prerequisites' not in course or course['prerequisites'] is None:
             course['prereq_tree'] = None
         else:
+            code = course['code']
             # if a course appears in its own prereq list then remove it
-            course['prerequisites'] = course['prerequisites'].replace(course['code'], '')
+            course['prerequisites'] = course['prerequisites'].replace(code, '')
+
             prereq_tree = PrereqTree(course['prerequisites'])
-            course['prereq_tree'], root = convert_tree(prereq_tree, 'prereq')
-            course['prereq_tree'].add_node(course['code'])
-            course['prereq_tree'].add_edge(course['code'], root)
+            course['prereq_tree'], root, connective_count =\
+                convert_tree(prereq_tree, 'prereq', code)
+
+            # add edge from course to prereq tree
+            course['prereq_tree'].add_node(code, type='course', value='')
+            if root != '':
+                course['prereq_tree'].add_node(f'{root[:-1]}_{connective_count}',
+                                               type='connective', value='')
+                course['prereq_tree'].add_edge(code, root, edge_type='prereq')
+                # remove any isolated leftover connectives
+                isolates = list(nx.isolates(course['prereq_tree']))
+                course['prereq_tree'].remove_nodes_from(isolates)
 
         if 'corequisites' not in course or course['corequisites'] is None:
             course['coreq_tree'] = None
         else:
-            course['corequisites'] = course['corequisites'].replace(course['code'], '')
+            code = course['code']
+            # if a course appears in its own coreq list then remove it.
+            course['corequisites'] = course['corequisites'].replace(code, '')
             coreq_tree = PrereqTree(course['corequisites'])
-            course['coreq_tree'], root = convert_tree(coreq_tree, 'coreq')
-            course['coreq_tree'].add_node(course['code'])
-            course['coreq_tree'].add_edge(course['code'], root)
+
+            course['coreq_tree'], root, connective_count =\
+                convert_tree(coreq_tree, 'coreq', code)
+
+            # add edge from course to coreq tree
+            course['coreq_tree'].add_node(code, type='course', value='')
+            if root != '':
+                course['coreq_tree'].add_node(f'{root[:-1]}_{connective_count}',
+                                              type='connective', value='')
+                course['coreq_tree'].add_edge(code, root, edge_type='coreq')
+                # remove any isolated leftover connectives
+                isolates = list(nx.isolates(course['coreq_tree']))
+                course['coreq_tree'].remove_nodes_from(isolates)
 
         data_dict[course['code']] = course
     return data_dict
 
 
-def convert_tree(tree: PrereqTree, tree_type: str) -> Tuple[nx.DiGraph, str]:
-    """Returns as a tuple the given PrereqTree as a networkx graph along with the tree's root."""
+def convert_tree(tree: PrereqTree, tree_type: str,
+                 course: str, connective_count=0) -> Tuple[nx.DiGraph, str, int]:
+    """Returns as a tuple the given PrereqTree as a networkx graph along with the tree's root and
+    the total number of connectives counted so far.
+
+    Connective_count counts the number of connectives encountered so far, so that we can label all
+    connectives uniquely.
+
+    Preconditions
+        - tree_type in {'prereq', 'coreq'}
+    """
     g = nx.DiGraph()
     if tree.subtrees == []:
-        g.add_node(tree.item, attr_dict={'type': 'course'})
+        # base case: leaf node, which always represents a course
+        if tree.item == '':
+            return g, '', connective_count
+        g.add_node(tree.item, type='course', value='')
+        return g, tree.item, connective_count
     else:
+        # create a copy to avoid mutation
+        connective_count_2 = connective_count
+
+        # add root of tree to g
+        tree_root_label = f'{tree.item}_{course}_{connective_count_2}'
+        g.add_node(tree_root_label, type='connective', value=tree.item)
+        connective_count_2 += 1
+
+        # convert & add subtrees to g
         for subtree in tree.subtrees:
-            converted_subtree, subtree_root = convert_tree(subtree, tree_type)
-            g = nx.compose(g, converted_subtree)
-            # add edge from root of g to root of subtree
-            g.add_edge(tree.item, subtree_root, edge_type=tree_type)
-    return g, tree.item
+            # helper
+            connective_count_2 = add_subtree(g, subtree, tree_type, course,
+                                             connective_count_2, tree_root_label)
+
+        return g, tree_root_label, connective_count_2
+
+
+def add_subtree(g: nx.DiGraph, subtree: PrereqTree, tree_type: str, course: str,
+                connective_count: int, tree_root_label: str) -> int:
+    """Converts the given subtree to nx.DiGraph object and composes it into g (g is mutated).
+    Returns the updated value of connective_count i.e. the number of connectives encountered
+    so far.
+
+    Preconditions
+        - tree_type in {'prereq', 'coreq'}
+    """
+    # counts the number of connectives encountered so far in order to label any upcoming connectives
+    connective_count_2 = connective_count
+
+    # convert this subtree to nx.DiGraph object. This is the recursive step in convert_graph.
+    converted_subtree, subtree_root, connective_count_2 = \
+        convert_tree(subtree, tree_type, course, connective_count_2)
+
+    if subtree_root == '':
+        return connective_count
+
+    # add nodes from converted_subtree to g
+    for node in converted_subtree.nodes(data=True):
+        if node[0] in {'or', 'and'}:
+            # if node is an unlabeled connective
+            g.add_node(f'{node[0]}_{course}_{connective_count_2}', type='connective', value=node[0])
+            connective_count_2 += 1
+        else:
+            # if node is a labeled connective or a course (all courses have already been labeled
+            # in the base case of convert_tree)
+            g.add_node(node[0], type=node[1]['type'], value=node[1]['value'])
+            if node[1]['type'] == 'connective':
+                connective_count_2 += 1
+
+    # add edge from tree root to this subtree's root
+    g.add_edge(tree_root_label, subtree_root, edge_type=tree_type)
+    # add edges from converted_subtree to g
+    g.add_edges_from(converted_subtree.edges, edge_type=tree_type)
+
+    return connective_count_2
 
 
 class PrereqTree:

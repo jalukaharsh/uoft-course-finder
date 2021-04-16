@@ -12,12 +12,10 @@ def build_trace_graph(courses: Dict[str, Dict], course: str) -> nx.DiGraph():
     coreq_tree = courses[course]['coreq_tree']
     AST = nx.compose_all([tree for tree in [prereq_tree, coreq_tree, nx.DiGraph()]
                           if tree is not None])
-
-    node_types = dict(AST.nodes(data='type', default='unknown'))
-    for vertex in node_types:
+    for vertex in AST.nodes(data=True):
         # recursive base case is when the only node in AST has course as its item
-        if node_types[vertex] == 'course' and vertex != course:
-            prereq_AST = build_trace_graph(courses, vertex)
+        if vertex[1]['type'] == 'course' and vertex[0] != course:
+            prereq_AST = build_trace_graph(courses, vertex[0])
             AST = nx.compose(AST, prereq_AST)
     return AST
 
@@ -75,8 +73,9 @@ def prereq_run(course: str) -> None:
     """Return a visualization of the prerequisites graph of the given course. """
     courses = get_courses_data()
     g = build_trace_graph(courses, course)
-    print(g.nodes)
-    draw_trace_graph(g, courses)
+    # print(g.nodes)
+    from visualizing_graph import draw_graph_prereq
+    draw_graph_prereq(g)
 
 
 if __name__ == '__main__':
