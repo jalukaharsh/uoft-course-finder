@@ -1,5 +1,4 @@
-"""
-CSC111 Project: University of Toronto: Data Filtering
+"""CSC111 Project: University of Toronto Course Finder: Data Filtering
 
 Module Description:
 ====================
@@ -7,13 +6,13 @@ The module contains the code that will filter the courses based on courses taken
 breadth, department and level.
 """
 
-from typing import Dict, Optional
+from typing import Dict
 
 
 def breadth(br: str, courses: Dict) -> Dict:
     """Return a list of course titles of all the courses that satisfy the br breadth requirement.
     """
-    if br == 'Pick a breadth category' or br == '':
+    if br in {'Pick a breadth category', ''}:
         return courses
     new_courses = {}
     for course in courses:
@@ -25,7 +24,7 @@ def breadth(br: str, courses: Dict) -> Dict:
 
 def level(lev: str, courses: Dict) -> Dict:
     """Return a list of course titles of all the courses that are at the lvl level."""
-    if lev == 'Pick a level' or lev == '':
+    if lev in {'Pick a level', ''}:
         return courses
     new_courses = {}
     for course in courses:
@@ -36,7 +35,7 @@ def level(lev: str, courses: Dict) -> Dict:
 
 def department(dept: str, courses: Dict) -> Dict:
     """Return a list of course titles of all the courses that are from dept department. """
-    if dept == 'Pick a department' or dept == '':
+    if dept in {'Pick a department', ''}:
         return courses
     new_courses = {}
     for course in courses:
@@ -53,3 +52,14 @@ def filter_courses(courses: Dict, lvl: str, dept: str, br: str) -> Dict:
     course2 = level(lvl, course1)
     course3 = department(dept, course2)
     return course3
+
+
+if __name__ == '__main__':
+    import python_ta
+
+    python_ta.check_all(config={
+        'extra-imports': [],
+        'allowed-io': [],
+        'max-line-length': 100,
+        'disable': ['E1136']
+    })
