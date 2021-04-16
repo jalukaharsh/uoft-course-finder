@@ -41,6 +41,8 @@ def draw_graph(graph: nx.Graph()) -> None:
         pos = getattr(nx, 'planar_layout')(graph)
     else:
         # kamada kawai layout
+        # sets optimal distances to be maximum distance in graph.
+        # this makes the algorithm space out nodes further than usual in the visualization
         df = pd.DataFrame(index=graph.nodes(), columns=graph.nodes())
         for row, data in nx.shortest_path_length(graph):
             for col, dist in data.items():
@@ -78,7 +80,7 @@ def draw_graph(graph: nx.Graph()) -> None:
                                hoverlabel={'namelength': 0}
                                )
 
-    if len(graph.edges) > 200:
+    if len(graph.edges) > 250:
         # if very high number of edges, use a faster algorithm to add them to the visualization
         edges_scatter = add_high_num_edges(graph, pos)
         fig = go.Figure(data=[edges_scatter, nodes_scatter])
