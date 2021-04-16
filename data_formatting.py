@@ -1,10 +1,10 @@
 """CSC111 Project: University of Toronto Course Finder: Data Formatting
+
 Module Description:
 ====================
 The module contains the function that processes the raw data file into list of courses, with each
 course represented as a dictionary.
 """
-
 
 from __future__ import annotations
 from typing import Tuple
@@ -30,7 +30,7 @@ def get_courses_data() -> dict:
             prereq_tree = PrereqTree(course['prerequisites'])
             course['prereq_tree'], root = convert_tree(prereq_tree, 'prereq')
             course['prereq_tree'].add_node(course['code'])
-            course['prereq_tree'].add_edge(course['code'], root)
+            course['prereq_tree'].add_edge_from(course['code'], root)
 
         if 'corequisites' not in course or course['corequisites'] is None:
             course['coreq_tree'] = None
@@ -39,15 +39,15 @@ def get_courses_data() -> dict:
             coreq_tree = PrereqTree(course['corequisites'])
             course['coreq_tree'], root = convert_tree(coreq_tree, 'coreq')
             course['coreq_tree'].add_node(course['code'])
-            course['coreq_tree'].add_edge(course['code'], root)
+            course['coreq_tree'].add_edge_from(course['code'], root)
 
         data_dict[course['code']] = course
     return data_dict
 
 
-def convert_tree(tree: PrereqTree, tree_type: str) -> Tuple[nx.DiGraph, str]:
+def convert_tree(tree: PrereqTree, tree_type: str) -> Tuple[nx.Graph, str]:
     """Returns as a tuple the given PrereqTree as a networkx graph along with the tree's root."""
-    g = nx.DiGraph()
+    g = nx.Graph()
     if tree.subtrees == []:
         g.add_node(tree.item, attr_dict={'type': 'course'})
     else:
@@ -55,23 +55,22 @@ def convert_tree(tree: PrereqTree, tree_type: str) -> Tuple[nx.DiGraph, str]:
             converted_subtree, subtree_root = convert_tree(subtree, tree_type)
             g = nx.compose(g, converted_subtree)
             # add edge from root of g to root of subtree
-            g.add_edge(tree.item, subtree_root, edge_type=tree_type)
+            g.add_edge_from(tree.item, subtree_root, edge_type=tree_type)
     return g, tree.item
 
 
 class PrereqTree:
     """A tree dataclass representing prerequisites and corequisites.
-
-     All courses which are not offered by UTSG are deliberately removed. If a string contains two
-     course codes without a (, ), ',', / between them (only english) then '/' is assumed.
+    All courses which are not offered by UTSG are deliberately removed. If a string contains two
+    course codes without a (, ), ',', / between them (only english) then '/' is assumed.
 
     Instance Attributes:
         - item: the type of the tree. It can be 'or' or 'and' or a string of the form
             /[A-Z]{3}[0-9]{3}[H,Y]1/ (in which case it is a root and subtrees is empty)
-        - subtrees: The vertices that are adjacent to this vertex. This
+        - subtrees: The vertices that are adjacent to this vertex
 
     Representation Invariants:
-        - self.item == 'and' or self.item == 'or' or self.item = '' or
+        - self.item == 'and' or self.item == 'or' or
             re.fullmatch(r'[A-Z]{3}[0-9]{3}[H,Y]1', self.item) is not None
     """
     item: str
@@ -149,11 +148,19 @@ class PrereqTree:
                 self.subtrees = []
                 for el in ors[0]:
                     self.subtrees.append(PrereqTree(el))
-            else:
-                self.subtrees = []
-                self.item = ''
         else:
             self.item = 'and'
             self.subtrees = []
             for el in ors:
                 self.subtrees.append(PrereqTree('/'.join(el)))
+
+
+if __name__ == '__main__':
+    import python_ta
+
+    python_ta.check_all(config={
+        'extra-imports': ['re', 'json', 'networkx'],
+        'allowed-io': ['get_courses_data'],
+        'max-line-length': 100,
+        'disable': ['E1136']
+    })
