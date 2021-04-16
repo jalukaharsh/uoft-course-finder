@@ -1,7 +1,12 @@
-"""Generate the future graphs."""
+"""CSC111 Project: University of Toronto Course Finder: Data Formatting
 
-import networkx as nx
+Module Description:
+====================
+The module contains the functions that generate the 'future graphs' for a given course.
+"""
+
 from typing import Dict
+import networkx as nx
 
 
 def future(courses: Dict[str, Dict], course: str) -> nx.Graph():
@@ -21,25 +26,12 @@ def add_children(courses: Dict[str, Dict], course: str, graph: nx.Graph()) -> No
             add_children(courses, item, graph)
 
 
-def future_one_level(courses: Dict[str, Dict], course: str) -> nx.Graph():
-    """Return a graph containing only the courses that the input course directly leads to.
-    """
-    future_graph = nx.Graph()
-    future_graph.add_node(course, tag='original')
-    for item in courses:
-        if courses[item]['prerequisites'] is not None and course in courses[item]['prerequisites']:
-            future_graph.add_node(item, tag='no')
-            future_graph.add_edge(course, item)
-    return future_graph
+if __name__ == '__main__':
+    import python_ta
 
-
-def future_one_level_mutate(courses: Dict[str, Dict], course: str, future_graph: nx.Graph()) -> None:
-    """Mutate a graph to add only the courses that the input course directly leads to.
-
-    Preconditions:
-        - course is in the graph
-    """
-    for item in courses:
-        if courses[item]['prerequisites'] is not None and course in courses[item]['prerequisites']:
-            future_graph.add_node(item, tag='no')
-            future_graph.add_edge(course, item)
+    python_ta.check_all(config={
+        'extra-imports': ['networkx'],
+        'allowed-io': [],
+        'max-line-length': 100,
+        'disable': ['E1136']
+    })
