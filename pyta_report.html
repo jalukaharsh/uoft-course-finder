@@ -533,7 +533,7 @@ footer {
     <body>
         <header>
             <h1 class="title">PyTA Error Report</h1>
-            <time>Fri. Apr. 16 2021, 11:45:13 PM</time>
+            <time>Sat. Apr. 17 2021, 12:35:02 AM</time>
         </header>
         <main>
             
@@ -603,104 +603,9 @@ footer {
                     </h3>
                     <div class="content collapsible">
                         
-                        <div class="error-instance">
+                        <span class="empty-placeholder">None!
 
-                            <div class="info">
-                                <span class="error-link style-error-id">
-                                    <a href="http://www.cs.toronto.edu/~david/pyta/&#35;R0914" target="_blank">&#10064; R0914 (too-many-locals)</a>
-                                </span>
-                                <span class="occurrences">
-                                1
-                                
-                                 occurrence.
-                                
-                                </span>
-                                <span class="shown">
-                                
-                                </span>
-                                <span class="slider">
-                                   <button> Expand/Collapse </button>
-                                </span>
-                            </div>
-
-                            <div class="message-container collapsible">
-                                
-                                <div class="message">
-                                    <h4 class="message-name">
-                                        [Line 36] This function has too many local variables (16, exceeding limit 15). You should try to reduce the complexity of the function by splitting up it, or combining related objects as a single one.
-                                        <span class="slider">
-                                            <button style="float: right; background: #458B00;"> Expand/Collapse </button>
-                                        </span>
-                                    </h4>
-                                    <div class="collapsible">
-                                      
-                                      <code>   <span class="grey line-num">34</span>  <span class="grey"></span>
-   <span class="grey line-num">35</span>  <span class="grey"></span>
-   <span class="gbold line-num">36</span>  <span class="highlight-pyta"><span class="pygments-k">def</span> <span class="pygments-nf">draw_graph</span><span class="pygments-p">(</span><span class="pygments-n">graph</span><span class="pygments-p">:</span> <span class="pygments-n">nx</span><span class="pygments-o">.</span><span class="pygments-n">Graph</span><span class="pygments-p">())</span> <span class="pygments-o">-&gt;</span> <span class="pygments-kc">None</span><span class="pygments-p">:</span></span>
-   <span class="gbold line-num">37</span>      <span class="highlight-pyta"><span class="pygments-s2">&quot;&quot;&quot;Return a visual interactive representation of the input graph.</span></span>
-   <span class="gbold line-num">38</span>      <span class="highlight-pyta"><span class="pygments-s2">&quot;&quot;&quot;</span></span>
-   <span class="gbold line-num">39</span>      <span class="highlight-pyta"><span class="pygments-n">is_planar</span><span class="pygments-p">,</span> <span class="pygments-n">_</span> <span class="pygments-o">=</span> <span class="pygments-n">nx</span><span class="pygments-o">.</span><span class="pygments-n">check_planarity</span><span class="pygments-p">(</span><span class="pygments-n">graph</span><span class="pygments-p">)</span></span>
-   <span class="gbold line-num">40</span>      <span class="highlight-pyta"><span class="pygments-k">if</span> <span class="pygments-n">is_planar</span><span class="pygments-p">:</span></span>
-   <span class="gbold line-num">41</span>          <span class="highlight-pyta"><span class="pygments-c1"># if graph is planar, use planar layout</span></span>
-   <span class="gbold line-num">42</span>          <span class="highlight-pyta"><span class="pygments-n">pos</span> <span class="pygments-o">=</span> <span class="pygments-nb">getattr</span><span class="pygments-p">(</span><span class="pygments-n">nx</span><span class="pygments-p">,</span> <span class="pygments-s1">&#39;planar_layout&#39;</span><span class="pygments-p">)(</span><span class="pygments-n">graph</span><span class="pygments-p">)</span></span>
-   <span class="gbold line-num">43</span>      <span class="highlight-pyta"><span class="pygments-k">else</span><span class="pygments-p">:</span></span>
-   <span class="gbold line-num">44</span>          <span class="highlight-pyta"><span class="pygments-c1"># kamada kawai layout</span></span>
-   <span class="gbold line-num">45</span>          <span class="highlight-pyta"><span class="pygments-n">df</span> <span class="pygments-o">=</span> <span class="pygments-n">pd</span><span class="pygments-o">.</span><span class="pygments-n">DataFrame</span><span class="pygments-p">(</span><span class="pygments-n">index</span><span class="pygments-o">=</span><span class="pygments-n">graph</span><span class="pygments-o">.</span><span class="pygments-n">nodes</span><span class="pygments-p">(),</span> <span class="pygments-n">columns</span><span class="pygments-o">=</span><span class="pygments-n">graph</span><span class="pygments-o">.</span><span class="pygments-n">nodes</span><span class="pygments-p">())</span></span>
-   <span class="gbold line-num">46</span>          <span class="highlight-pyta"><span class="pygments-k">for</span> <span class="pygments-n">row</span><span class="pygments-p">,</span> <span class="pygments-n">data</span> <span class="pygments-ow">in</span> <span class="pygments-n">nx</span><span class="pygments-o">.</span><span class="pygments-n">shortest_path_length</span><span class="pygments-p">(</span><span class="pygments-n">graph</span><span class="pygments-p">):</span></span>
-   <span class="gbold line-num">47</span>              <span class="highlight-pyta"><span class="pygments-k">for</span> <span class="pygments-n">col</span><span class="pygments-p">,</span> <span class="pygments-n">dist</span> <span class="pygments-ow">in</span> <span class="pygments-n">data</span><span class="pygments-o">.</span><span class="pygments-n">items</span><span class="pygments-p">():</span></span>
-   <span class="gbold line-num">48</span>                  <span class="highlight-pyta"><span class="pygments-n">df</span><span class="pygments-o">.</span><span class="pygments-n">loc</span><span class="pygments-p">[</span><span class="pygments-n">row</span><span class="pygments-p">,</span> <span class="pygments-n">col</span><span class="pygments-p">]</span> <span class="pygments-o">=</span> <span class="pygments-n">dist</span></span>
-   <span class="gbold line-num">49</span>          <span class="highlight-pyta"><span class="pygments-n">df</span> <span class="pygments-o">=</span> <span class="pygments-n">df</span><span class="pygments-o">.</span><span class="pygments-n">fillna</span><span class="pygments-p">(</span><span class="pygments-n">df</span><span class="pygments-o">.</span><span class="pygments-n">max</span><span class="pygments-p">()</span><span class="pygments-o">.</span><span class="pygments-n">max</span><span class="pygments-p">())</span></span>
-   <span class="gbold line-num">50</span>          <span class="highlight-pyta"><span class="pygments-n">pos</span> <span class="pygments-o">=</span> <span class="pygments-n">nx</span><span class="pygments-o">.</span><span class="pygments-n">kamada_kawai_layout</span><span class="pygments-p">(</span><span class="pygments-n">graph</span><span class="pygments-p">,</span> <span class="pygments-n">dist</span><span class="pygments-o">=</span><span class="pygments-n">df</span><span class="pygments-o">.</span><span class="pygments-n">to_dict</span><span class="pygments-p">())</span></span>
-   <span class="gbold line-num">51</span>  <span class="highlight-pyta"></span>
-   <span class="gbold line-num">52</span>      <span class="highlight-pyta"><span class="pygments-c1"># node coordinates</span></span>
-   <span class="gbold line-num">53</span>      <span class="highlight-pyta"><span class="pygments-n">x_values</span> <span class="pygments-o">=</span> <span class="pygments-p">[</span><span class="pygments-n">pos</span><span class="pygments-p">[</span><span class="pygments-n">k</span><span class="pygments-p">][</span><span class="pygments-mi">0</span><span class="pygments-p">]</span> <span class="pygments-k">for</span> <span class="pygments-n">k</span> <span class="pygments-ow">in</span> <span class="pygments-n">graph</span><span class="pygments-o">.</span><span class="pygments-n">nodes</span><span class="pygments-p">]</span></span>
-   <span class="gbold line-num">54</span>      <span class="highlight-pyta"><span class="pygments-n">y_values</span> <span class="pygments-o">=</span> <span class="pygments-p">[</span><span class="pygments-n">pos</span><span class="pygments-p">[</span><span class="pygments-n">k</span><span class="pygments-p">][</span><span class="pygments-mi">1</span><span class="pygments-p">]</span> <span class="pygments-k">for</span> <span class="pygments-n">k</span> <span class="pygments-ow">in</span> <span class="pygments-n">graph</span><span class="pygments-o">.</span><span class="pygments-n">nodes</span><span class="pygments-p">]</span></span>
-   <span class="gbold line-num">55</span>      <span class="highlight-pyta"><span class="pygments-c1"># node values</span></span>
-   <span class="gbold line-num">56</span>      <span class="highlight-pyta"><span class="pygments-n">labels</span> <span class="pygments-o">=</span> <span class="pygments-nb">list</span><span class="pygments-p">(</span><span class="pygments-n">node</span><span class="pygments-p">[</span><span class="pygments-mi">1</span><span class="pygments-p">][</span><span class="pygments-s1">&#39;value&#39;</span><span class="pygments-p">]</span> <span class="pygments-k">for</span> <span class="pygments-n">node</span> <span class="pygments-ow">in</span> <span class="pygments-n">graph</span><span class="pygments-o">.</span><span class="pygments-n">nodes</span><span class="pygments-p">(</span><span class="pygments-n">data</span><span class="pygments-o">=</span><span class="pygments-kc">True</span><span class="pygments-p">))</span></span>
-   <span class="gbold line-num">57</span>      <span class="highlight-pyta"><span class="pygments-c1"># node colors</span></span>
-   <span class="gbold line-num">58</span>      <span class="highlight-pyta"><span class="pygments-n">colours</span> <span class="pygments-o">=</span> <span class="pygments-p">[</span><span class="pygments-n">ROOT_COLOUR</span> <span class="pygments-k">if</span> <span class="pygments-n">graph</span><span class="pygments-o">.</span><span class="pygments-n">nodes</span><span class="pygments-p">[</span><span class="pygments-n">k</span><span class="pygments-p">][</span><span class="pygments-s1">&#39;tag&#39;</span><span class="pygments-p">]</span> <span class="pygments-o">==</span> <span class="pygments-s1">&#39;original&#39;</span> <span class="pygments-k">else</span> <span class="pygments-n">OTHERS_COLOUR</span></span>
-   <span class="gbold line-num">59</span>                 <span class="highlight-pyta"><span class="pygments-k">for</span> <span class="pygments-n">k</span> <span class="pygments-ow">in</span> <span class="pygments-n">graph</span><span class="pygments-o">.</span><span class="pygments-n">nodes</span><span class="pygments-p">]</span></span>
-   <span class="gbold line-num">60</span>      <span class="highlight-pyta"><span class="pygments-c1"># add nodes to diagram</span></span>
-   <span class="gbold line-num">61</span>      <span class="highlight-pyta"><span class="pygments-k">if</span> <span class="pygments-nb">len</span><span class="pygments-p">(</span><span class="pygments-n">labels</span><span class="pygments-p">)</span> <span class="pygments-o">&gt;</span> <span class="pygments-mi">50</span><span class="pygments-p">:</span></span>
-   <span class="gbold line-num">62</span>          <span class="highlight-pyta"><span class="pygments-c1"># if very high number of nodes, only show node markers</span></span>
-   <span class="gbold line-num">63</span>          <span class="highlight-pyta"><span class="pygments-n">mode</span> <span class="pygments-o">=</span> <span class="pygments-s1">&#39;markers&#39;</span></span>
-   <span class="gbold line-num">64</span>      <span class="highlight-pyta"><span class="pygments-k">else</span><span class="pygments-p">:</span></span>
-   <span class="gbold line-num">65</span>          <span class="highlight-pyta"><span class="pygments-c1"># if low-ish number of nodes, display node value next to markers</span></span>
-   <span class="gbold line-num">66</span>          <span class="highlight-pyta"><span class="pygments-n">mode</span> <span class="pygments-o">=</span> <span class="pygments-s1">&#39;markers+text&#39;</span></span>
-   <span class="gbold line-num">67</span>      <span class="highlight-pyta"><span class="pygments-n">trace3</span> <span class="pygments-o">=</span> <span class="pygments-n">go</span><span class="pygments-o">.</span><span class="pygments-n">Scatter</span><span class="pygments-p">(</span><span class="pygments-n">x</span><span class="pygments-o">=</span><span class="pygments-n">x_values</span><span class="pygments-p">,</span></span>
-   <span class="gbold line-num">68</span>                          <span class="highlight-pyta"><span class="pygments-n">y</span><span class="pygments-o">=</span><span class="pygments-n">y_values</span><span class="pygments-p">,</span></span>
-   <span class="gbold line-num">69</span>                          <span class="highlight-pyta"><span class="pygments-n">mode</span><span class="pygments-o">=</span><span class="pygments-n">mode</span><span class="pygments-p">,</span></span>
-   <span class="gbold line-num">70</span>                          <span class="highlight-pyta"><span class="pygments-n">name</span><span class="pygments-o">=</span><span class="pygments-s1">&#39;nodes&#39;</span><span class="pygments-p">,</span></span>
-   <span class="gbold line-num">71</span>                          <span class="highlight-pyta"><span class="pygments-n">marker</span><span class="pygments-o">=</span><span class="pygments-nb">dict</span><span class="pygments-p">(</span><span class="pygments-n">symbol</span><span class="pygments-o">=</span><span class="pygments-s1">&#39;circle-dot&#39;</span><span class="pygments-p">,</span></span>
-   <span class="gbold line-num">72</span>                                      <span class="highlight-pyta"><span class="pygments-n">size</span><span class="pygments-o">=</span><span class="pygments-mi">5</span><span class="pygments-p">,</span></span>
-   <span class="gbold line-num">73</span>                                      <span class="highlight-pyta"><span class="pygments-n">color</span><span class="pygments-o">=</span><span class="pygments-n">colours</span><span class="pygments-p">,</span></span>
-   <span class="gbold line-num">74</span>                                      <span class="highlight-pyta"><span class="pygments-n">line</span><span class="pygments-o">=</span><span class="pygments-nb">dict</span><span class="pygments-p">(</span><span class="pygments-n">color</span><span class="pygments-o">=</span><span class="pygments-n">VERTEX_BORDER_COLOUR</span><span class="pygments-p">,</span> <span class="pygments-n">width</span><span class="pygments-o">=</span><span class="pygments-mf">0.5</span><span class="pygments-p">)</span></span>
-   <span class="gbold line-num">75</span>                                      <span class="highlight-pyta"><span class="pygments-p">),</span></span>
-   <span class="gbold line-num">76</span>                          <span class="highlight-pyta"><span class="pygments-n">text</span><span class="pygments-o">=</span><span class="pygments-n">labels</span><span class="pygments-p">,</span></span>
-   <span class="gbold line-num">77</span>                          <span class="highlight-pyta"><span class="pygments-n">textposition</span><span class="pygments-o">=</span><span class="pygments-s1">&#39;top right&#39;</span><span class="pygments-p">,</span></span>
-   <span class="gbold line-num">78</span>                          <span class="highlight-pyta"><span class="pygments-n">hovertemplate</span><span class="pygments-o">=</span><span class="pygments-s1">&#39;%</span><span class="pygments-si">{text}</span><span class="pygments-s1">&#39;</span><span class="pygments-p">,</span></span>
-   <span class="gbold line-num">79</span>                          <span class="highlight-pyta"><span class="pygments-n">hoverlabel</span><span class="pygments-o">=</span><span class="pygments-p">{</span><span class="pygments-s1">&#39;namelength&#39;</span><span class="pygments-p">:</span> <span class="pygments-mi">0</span><span class="pygments-p">}</span></span>
-   <span class="gbold line-num">80</span>                          <span class="highlight-pyta"><span class="pygments-p">)</span></span>
-   <span class="gbold line-num">81</span>  <span class="highlight-pyta"></span>
-   <span class="gbold line-num">82</span>      <span class="highlight-pyta"><span class="pygments-n">fig</span> <span class="pygments-o">=</span> <span class="pygments-n">go</span><span class="pygments-o">.</span><span class="pygments-n">Figure</span><span class="pygments-p">(</span><span class="pygments-n">data</span><span class="pygments-o">=</span><span class="pygments-p">[</span><span class="pygments-n">trace3</span><span class="pygments-p">])</span></span>
-   <span class="gbold line-num">83</span>  <span class="highlight-pyta"></span>
-   <span class="gbold line-num">84</span>      <span class="highlight-pyta"><span class="pygments-n">add_edges</span><span class="pygments-p">(</span><span class="pygments-n">graph</span><span class="pygments-p">,</span> <span class="pygments-n">fig</span><span class="pygments-p">,</span> <span class="pygments-n">pos</span><span class="pygments-p">)</span></span>
-   <span class="gbold line-num">85</span>  <span class="highlight-pyta"></span>
-   <span class="gbold line-num">86</span>      <span class="highlight-pyta"><span class="pygments-n">fig</span><span class="pygments-o">.</span><span class="pygments-n">update_layout</span><span class="pygments-p">({</span><span class="pygments-s1">&#39;showlegend&#39;</span><span class="pygments-p">:</span> <span class="pygments-kc">False</span><span class="pygments-p">})</span></span>
-   <span class="gbold line-num">87</span>      <span class="highlight-pyta"><span class="pygments-n">fig</span><span class="pygments-o">.</span><span class="pygments-n">update_xaxes</span><span class="pygments-p">(</span><span class="pygments-n">showgrid</span><span class="pygments-o">=</span><span class="pygments-kc">False</span><span class="pygments-p">,</span> <span class="pygments-n">zeroline</span><span class="pygments-o">=</span><span class="pygments-kc">False</span><span class="pygments-p">,</span> <span class="pygments-n">visible</span><span class="pygments-o">=</span><span class="pygments-kc">False</span><span class="pygments-p">)</span></span>
-   <span class="gbold line-num">88</span>      <span class="highlight-pyta"><span class="pygments-n">fig</span><span class="pygments-o">.</span><span class="pygments-n">update_yaxes</span><span class="pygments-p">(</span><span class="pygments-n">showgrid</span><span class="pygments-o">=</span><span class="pygments-kc">False</span><span class="pygments-p">,</span> <span class="pygments-n">zeroline</span><span class="pygments-o">=</span><span class="pygments-kc">False</span><span class="pygments-p">,</span> <span class="pygments-n">visible</span><span class="pygments-o">=</span><span class="pygments-kc">False</span><span class="pygments-p">)</span></span>
-   <span class="gbold line-num">89</span>  <span class="highlight-pyta"></span>
-   <span class="gbold line-num">90</span>      <span class="highlight-pyta"><span class="pygments-n">fig</span><span class="pygments-o">.</span><span class="pygments-n">show</span><span class="pygments-p">()</span></span>
-   <span class="grey line-num">91</span>  <span class="grey"></span>
-   <span class="grey line-num">92</span>  <span class="grey"></span>
-</code>
-                                      
-                                    </div>
-                                </div>
-                                
-                            </div>
-
-                        </div>
+</span>
                         
                     </div>
                 </article>

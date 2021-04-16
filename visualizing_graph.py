@@ -63,30 +63,53 @@ def draw_graph(graph: nx.Graph()) -> None:
     else:
         # if low-ish number of nodes, display node value next to markers
         mode = 'markers+text'
-    trace3 = go.Scatter(x=x_values,
-                        y=y_values,
-                        mode=mode,
-                        name='nodes',
-                        marker=dict(symbol='circle-dot',
-                                    size=5,
-                                    color=colours,
-                                    line=dict(color=VERTEX_BORDER_COLOUR, width=0.5)
-                                    ),
-                        text=labels,
-                        textposition='top right',
-                        hovertemplate='%{text}',
-                        hoverlabel={'namelength': 0}
-                        )
+    nodes_scatter = go.Scatter(x=x_values,
+                               y=y_values,
+                               mode=mode,
+                               name='nodes',
+                               marker=dict(symbol='circle-dot',
+                                           size=5,
+                                           color=colours,
+                                           line=dict(color=VERTEX_BORDER_COLOUR, width=0.5)
+                                           ),
+                               text=labels,
+                               textposition='top right',
+                               hovertemplate='%{text}',
+                               hoverlabel={'namelength': 0}
+                               )
 
-    fig = go.Figure(data=[trace3])
-
-    add_edges(graph, fig, pos)
+    if len(graph.edges) > 200:
+        # if very high number of edges, use a faster algorithm to add them to the visualization
+        edges_scatter = add_high_num_edges(graph, pos)
+        fig = go.Figure(data=[edges_scatter, nodes_scatter])
+    else:
+        fig = go.Figure(data=[nodes_scatter])
+        add_edges(graph, fig, pos)
 
     fig.update_layout({'showlegend': False})
     fig.update_xaxes(showgrid=False, zeroline=False, visible=False)
     fig.update_yaxes(showgrid=False, zeroline=False, visible=False)
 
     fig.show()
+
+
+def add_high_num_edges(graph: nx.DiGraph, pos: dict) -> go.Scatter:
+    """Return a Scatter object containing the graph's edges using a faster algortihm than add_edges.
+    This function is used when the graph has a very high number of edges."""
+    x_edges = []
+    y_edges = []
+    for edge in graph.edges:
+        x_edges += [pos[edge[0]][0], pos[edge[1]][0], None]
+        y_edges += [pos[edge[0]][1], pos[edge[1]][1], None]
+
+    edges_scatter = go.Scatter(x=x_edges,
+                               y=y_edges,
+                               mode='lines',
+                               name='edges',
+                               line=dict(color=LINE_COLOUR, width=1),
+                               hoverinfo='none',
+                               )
+    return edges_scatter
 
 
 def add_edges(graph: nx.DiGraph, fig: go.Figure, pos: dict) -> None:
