@@ -28,7 +28,6 @@ def run_app() -> None:
         """Ran whenever 'Search' button is clicked on the main screen. """
         br = breadth_list.get()
         lvl = level_list.get()
-        print(lvl == '')
         if lvl != '':
             lvl = lvl[0]
         department = dept_filter.get()
