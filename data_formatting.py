@@ -23,47 +23,41 @@ def get_courses_data() -> dict:
         if 'prerequisites' not in course or course['prerequisites'] is None:
             course['prereq_tree'] = None
         else:
-            code = course['code']
-            # if a course appears in its own prereq list then remove it
-            course['prerequisites'] = course['prerequisites'].replace(code, '')
-
-            prereq_tree = PrereqTree(course['prerequisites'])
-            course['prereq_tree'], root, connective_count =\
-                convert_tree(prereq_tree, 'prereq', code)
-
-            # add edge from course to prereq tree
-            course['prereq_tree'].add_node(code, type='course', value='')
-            if root != '':
-                course['prereq_tree'].add_node(f'{root[:-1]}_{connective_count}',
-                                               type='connective', value='')
-                course['prereq_tree'].add_edge(code, root, edge_type='prereq')
-                # remove any isolated leftover connectives
-                isolates = list(nx.isolates(course['prereq_tree']))
-                course['prereq_tree'].remove_nodes_from(isolates)
+            add_tree(course, 'pre')
 
         if 'corequisites' not in course or course['corequisites'] is None:
             course['coreq_tree'] = None
         else:
-            code = course['code']
-            # if a course appears in its own coreq list then remove it.
-            course['corequisites'] = course['corequisites'].replace(code, '')
-            coreq_tree = PrereqTree(course['corequisites'])
-
-            course['coreq_tree'], root, connective_count =\
-                convert_tree(coreq_tree, 'coreq', code)
-
-            # add edge from course to coreq tree
-            course['coreq_tree'].add_node(code, type='course', value='')
-            if root != '':
-                course['coreq_tree'].add_node(f'{root[:-1]}_{connective_count}',
-                                              type='connective', value='')
-                course['coreq_tree'].add_edge(code, root, edge_type='coreq')
-                # remove any isolated leftover connectives
-                isolates = list(nx.isolates(course['coreq_tree']))
-                course['coreq_tree'].remove_nodes_from(isolates)
+            add_tree(course, 'co')
 
         data_dict[course['code']] = course
     return data_dict
+
+
+def add_tree(course: Dict, type: str) -> None:
+    """Mutates course to insert a prerequisite/corequisite tree (depending on type).
+
+    Preconditions
+        - type in {'co', 'pre'}
+    """
+    code = course['code']
+    # if a course appears in its own req list then remove it.
+    course[type + 'requisites'] = course[type + 'requisites'].replace(code, '')
+    tree = PrereqTree(course[type + 'requisites'])
+
+    # add requisite tree to course dict
+    course[type + 'req_tree'], root, connective_count = \
+        convert_tree(tree, type + 'req', code)
+
+    # add edge from course to req tree
+    course[type + 'req_tree'].add_node(code, type='course', value='')
+    if root != '':
+        course[type + 'req_tree'].add_node(f'{root[:-1]}_{connective_count}',
+                                      type='connective', value='')
+        course[type + 'req_tree'].add_edge(code, root, edge_type=type + 'req')
+        # remove any isolated leftover connectives
+        isolates = list(nx.isolates(course[type + 'req_tree']))
+        course[type + 'req_tree'].remove_nodes_from(isolates)
 
 
 def convert_tree(tree: PrereqTree, tree_type: str,
