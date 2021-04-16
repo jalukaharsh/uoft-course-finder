@@ -1,15 +1,14 @@
-"""All code for visualizing graph. """
+"""CSC111 Project: University of Toronto Course Finder: Data Filtering
 
+Module Description:
+===================
+The module contains the code for visualizing graphs.
+"""
+from typing import Dict
 import networkx as nx
 import plotly.graph_objects as go
-# import matplotlib.pyplot as plt
-# from networkx.drawing.nx_agraph import graphviz_layout, write_dot
-import future_graph
-from data_formatting import get_courses_data
 from future_graph import future
-from typing import Dict
 
-# courses = get_courses_data()
 
 LINE_COLOUR = 'rgb(210,210,210)'
 VERTEX_BORDER_COLOUR = 'rgb(50, 50, 50)'
@@ -115,3 +114,14 @@ def future_run(courses: Dict, course: str) -> None:
     """Return a visualization of the future graph of the given course. """
     graph = future(courses, course)
     draw_graph(graph)
+
+
+if __name__ == '__main__':
+    import python_ta
+
+    python_ta.check_all(config={
+        'extra-imports': ['networkx', 'plotly.graph_objects', 'future_graph'],
+        'allowed-io': [],
+        'max-line-length': 100,
+        'disable': ['E1136']
+    })
