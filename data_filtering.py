@@ -24,7 +24,7 @@ def breadth(br: str, courses: Dict) -> Dict:
 
 def level(lev: str, courses: Dict) -> Dict:
     """Return a list of course titles of all the courses that are at the lvl level."""
-    if lev in {'Pick a level', ''}:
+    if lev in {'Pick a level', 'P', ''}:
         return courses
     new_courses = {}
     for course in courses:
