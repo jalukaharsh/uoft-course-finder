@@ -1,5 +1,9 @@
-"""Code to build the prerequisities graph. """
+"""CSC111 Project: University of Toronto Course Finder: Prerequisite Graph
 
+Module Description:
+====================
+The module contains the functions that generate the 'prereq graphs' for a given course.
+"""
 
 from typing import Dict
 import networkx as nx
