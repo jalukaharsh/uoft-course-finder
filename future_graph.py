@@ -1,4 +1,4 @@
-"""CSC111 Project: University of Toronto Course Finder: Data Formatting
+"""CSC111 Project: University of Toronto Course Finder: Future Graph
 
 Module Description:
 ====================
