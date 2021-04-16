@@ -1,11 +1,13 @@
 """CSC111 Project: University of Toronto Course Finder: Data Formatting
+
 Module Description:
 ====================
 The module contains the function that processes the raw data file into list of courses, with each
 course represented as a dictionary.
 """
+
 from __future__ import annotations
-from typing import Tuple
+from typing import Tuple, Dict
 import json
 import re
 import networkx as nx
@@ -36,7 +38,6 @@ def get_courses_data() -> dict:
 
 def add_tree(course: Dict, type: str) -> None:
     """Mutates course to insert a prerequisite/corequisite tree (depending on type).
-
     Preconditions
         - type in {'co', 'pre'}
     """
@@ -53,7 +54,7 @@ def add_tree(course: Dict, type: str) -> None:
     course[type + 'req_tree'].add_node(code, type='course', value='')
     if root != '':
         course[type + 'req_tree'].add_node(f'{root[:-1]}_{connective_count}',
-                                      type='connective', value='')
+                                           type='connective', value='')
         course[type + 'req_tree'].add_edge(code, root, edge_type=type + 'req')
         # remove any isolated leftover connectives
         isolates = list(nx.isolates(course[type + 'req_tree']))
@@ -64,10 +65,8 @@ def convert_tree(tree: PrereqTree, tree_type: str,
                  course: str, connective_count=0) -> Tuple[nx.DiGraph, str, int]:
     """Returns as a tuple the given PrereqTree as a networkx graph along with the tree's root and
     the total number of connectives counted so far.
-
     Connective_count counts the number of connectives encountered so far, so that we can label all
     connectives uniquely.
-
     Preconditions
         - tree_type in {'prereq', 'coreq'}
     """
@@ -101,7 +100,6 @@ def add_subtree(g: nx.DiGraph, subtree: PrereqTree, tree_type: str, course: str,
     """Converts the given subtree to nx.DiGraph object and composes it into g (g is mutated).
     Returns the updated value of connective_count i.e. the number of connectives encountered
     so far.
-
     Preconditions
         - tree_type in {'prereq', 'coreq'}
     """
@@ -138,15 +136,12 @@ def add_subtree(g: nx.DiGraph, subtree: PrereqTree, tree_type: str, course: str,
 
 class PrereqTree:
     """A tree dataclass representing prerequisites and corequisites.
-
      All courses which are not offered by UTSG are deliberately removed. If a string contains two
      course codes without a (, ), ',', / between them (only english) then '/' is assumed.
-
     Instance Attributes:
         - item: the type of the tree. It can be 'or' or 'and' or a string of the form
             /[A-Z]{3}[0-9]{3}[H,Y]1/ (in which case it is a root and subtrees is empty)
         - subtrees: The vertices that are adjacent to this vertex. This
-
     Representation Invariants:
         - self.item == 'and' or self.item == 'or' or self.item = '' or
             re.fullmatch(r'[A-Z]{3}[0-9]{3}[H,Y]1', self.item) is not None
