@@ -1,11 +1,9 @@
 """CSC111 Project: University of Toronto Course Finder: Data Formatting
-
 Module Description:
 ====================
 The module contains the function that processes the raw data file into list of courses, with each
 course represented as a dictionary.
 """
-
 from __future__ import annotations
 from typing import Tuple
 import json
@@ -30,7 +28,7 @@ def get_courses_data() -> dict:
             prereq_tree = PrereqTree(course['prerequisites'])
             course['prereq_tree'], root = convert_tree(prereq_tree, 'prereq')
             course['prereq_tree'].add_node(course['code'])
-            course['prereq_tree'].add_edge_from(course['code'], root)
+            course['prereq_tree'].add_edge(course['code'], root)
 
         if 'corequisites' not in course or course['corequisites'] is None:
             course['coreq_tree'] = None
@@ -39,7 +37,7 @@ def get_courses_data() -> dict:
             coreq_tree = PrereqTree(course['corequisites'])
             course['coreq_tree'], root = convert_tree(coreq_tree, 'coreq')
             course['coreq_tree'].add_node(course['code'])
-            course['coreq_tree'].add_edge_from(course['code'], root)
+            course['coreq_tree'].add_edge(course['code'], root)
 
         data_dict[course['code']] = course
     return data_dict
@@ -55,22 +53,23 @@ def convert_tree(tree: PrereqTree, tree_type: str) -> Tuple[nx.Graph, str]:
             converted_subtree, subtree_root = convert_tree(subtree, tree_type)
             g = nx.compose(g, converted_subtree)
             # add edge from root of g to root of subtree
-            g.add_edge_from(tree.item, subtree_root, edge_type=tree_type)
+            g.add_edge(tree.item, subtree_root, edge_type=tree_type)
     return g, tree.item
 
 
 class PrereqTree:
     """A tree dataclass representing prerequisites and corequisites.
-    All courses which are not offered by UTSG are deliberately removed. If a string contains two
-    course codes without a (, ), ',', / between them (only english) then '/' is assumed.
+
+     All courses which are not offered by UTSG are deliberately removed. If a string contains two
+     course codes without a (, ), ',', / between them (only english) then '/' is assumed.
 
     Instance Attributes:
         - item: the type of the tree. It can be 'or' or 'and' or a string of the form
             /[A-Z]{3}[0-9]{3}[H,Y]1/ (in which case it is a root and subtrees is empty)
-        - subtrees: The vertices that are adjacent to this vertex
+        - subtrees: The vertices that are adjacent to this vertex. This
 
     Representation Invariants:
-        - self.item == 'and' or self.item == 'or' or
+        - self.item == 'and' or self.item == 'or' or self.item = '' or
             re.fullmatch(r'[A-Z]{3}[0-9]{3}[H,Y]1', self.item) is not None
     """
     item: str
@@ -96,39 +95,7 @@ class PrereqTree:
         # tokenize the prereq string into courses codes, commas, forward slashes and parentheses
         split_str = re.findall(r'(?:(?:[A-Z]{3}[0-9]{3}[H,Y]1)|[/,()])', prereq_str)
 
-        # combine each parenthetical into a single string (which we will later recurse on)
-        while '(' in split_str:
-            first_paren = split_str.index('(')
-            nest = 1
-            length = 1
-            while nest >= 1:
-                if length + first_paren >= len(split_str):
-                    # this should only occur if there are unmatched parentheses
-                    split_str.append(')')
-
-                substr = split_str[length + first_paren]
-                length += 1
-                if substr == '(':
-                    nest += 1
-                elif substr == ')':
-                    nest -= 1
-
-            # join the parenthesized string together (without the parentheses included)
-            parenthesized_str = ''.join(split_str[first_paren + 1:first_paren + length - 1])
-
-            if re.search(r'[A-Z]{3}[0-9]{3}[H,Y]1', parenthesized_str) is None:
-                # if the parenthesized string includes no course codes then we remove it
-                split_str = split_str[0: first_paren] + split_str[first_paren + length:]
-            else:
-                # otherwise insert it into split str, replacing the indices that were used by
-                # its constituent parts
-                split_str = split_str[0: first_paren] + [parenthesized_str] + \
-                            split_str[first_paren + length:]
-
-        while ')' in split_str:  # this should only happen if there is some ')' which is
-            # not matching a ')'.
-            index = split_str.index(')')
-            split_str = split_str[:index] + split_str[index + 1:]
+        split_str = combine_parentheses(split_str)
 
         ors = []  # list of each or(/) block.
         current = []
@@ -148,11 +115,54 @@ class PrereqTree:
                 self.subtrees = []
                 for el in ors[0]:
                     self.subtrees.append(PrereqTree(el))
+            else:
+                self.subtrees = []
+                self.item = ''
         else:
             self.item = 'and'
             self.subtrees = []
             for el in ors:
                 self.subtrees.append(PrereqTree('/'.join(el)))
+
+
+def combine_parentheses(split_str: list[str]) -> list[str]:
+    """Takes a tokenized prereq string and combines each parenthetical
+    into a single string (which is later recursed on)
+    """
+    while '(' in split_str:
+        first_paren = split_str.index('(')
+        nest = 1
+        length = 1
+        while nest >= 1:
+            if length + first_paren >= len(split_str):
+                # this should only occur if there are unmatched parentheses
+                split_str.append(')')
+
+            substr = split_str[length + first_paren]
+            length += 1
+            if substr == '(':
+                nest += 1
+            elif substr == ')':
+                nest -= 1
+
+        # join the parenthesized string together (without the parentheses included)
+        parenthesized_str = ''.join(split_str[first_paren + 1:first_paren + length - 1])
+
+        if re.search(r'[A-Z]{3}[0-9]{3}[H,Y]1', parenthesized_str) is None:
+            # if the parenthesized string includes no course codes then we remove it
+            split_str = split_str[0: first_paren] + split_str[first_paren + length:]
+        else:
+            # otherwise insert it into split str, replacing the indices that were used by
+            # its constituent parts
+            split_str = split_str[0: first_paren] + [parenthesized_str] + \
+                        split_str[first_paren + length:]
+
+    while ')' in split_str:  # this should only happen if there is some ')' which is
+        # not matching a ')'.
+        index = split_str.index(')')
+        split_str = split_str[:index] + split_str[index + 1:]
+
+    return split_str
 
 
 if __name__ == '__main__':
