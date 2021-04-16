@@ -17,10 +17,11 @@ def build_trace_graph(courses: Dict[str, Dict], course: str) -> nx.DiGraph():
                           if tree is not None])
     for vertex in ast.nodes(data=True):
         # recursive base case is when the only node in AST has course as its item
-        if vertex[1]['type'] == 'course' and vertex[0] != course:
+        if vertex[1]['type'] == 'course' and vertex[0] != course and vertex[0] in courses:
             prereq_ast = build_trace_graph(courses, vertex[0])
             ast = nx.compose(ast, prereq_ast)
 
+    # mark original searched course so it can be colored distinctively
     for item in ast.nodes:
         if item == course:
             ast.nodes[item]['tag'] = 'original'

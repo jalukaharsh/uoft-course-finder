@@ -26,7 +26,7 @@ def draw_graph(graph: nx.Graph(), layout: str = 'spring_layout') -> None:
 
     x_values = [pos[k][0] for k in graph.nodes]
     y_values = [pos[k][1] for k in graph.nodes]
-    labels = list(graph.nodes)
+    labels = list(node[1]['value'] for node in graph.nodes(data=True))
 
     colours = [ROOT_COLOUR if graph.nodes[k]['tag'] == 'original' else OTHERS_COLOUR
                for k in graph.nodes]
@@ -47,7 +47,7 @@ def draw_graph(graph: nx.Graph(), layout: str = 'spring_layout') -> None:
 
     trace4 = go.Scatter(x=x_values,
                         y=y_values,
-                        mode='markers',
+                        mode='markers+text',
                         name='nodes',
                         marker=dict(symbol='circle-dot',
                                     size=5,
@@ -55,6 +55,7 @@ def draw_graph(graph: nx.Graph(), layout: str = 'spring_layout') -> None:
                                     line=dict(color=VERTEX_BORDER_COLOUR, width=0.5)
                                     ),
                         text=labels,
+                        textposition='top right',
                         hovertemplate='%{text}',
                         hoverlabel={'namelength': 0}
                         )
